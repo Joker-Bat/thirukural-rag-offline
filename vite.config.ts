@@ -4,6 +4,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 import path from 'path';
 
 export default defineConfig({
+  base: './', // Ensures relative assets resolution for GitHub Pages subpaths
   server: {
     host: true, // Listen on all local IP addresses (0.0.0.0)
     port: 5173,
