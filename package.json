@@ -8,6 +8,9 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview"
   },
+  "engines": {
+    "node": ">=24.0.0"
+  },
   "dependencies": {
     "@huggingface/transformers": "^3.3.3",
     "clsx": "^2.1.1",

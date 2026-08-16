@@ -19,8 +19,12 @@ export interface IServiceContainer {
 }
 
 export function createDefaultServiceContainer(): IServiceContainer {
-  const dataSource = new StaticJsonKuralDataSource('/kurals.json');
-  const vectorIndex = new FlatBinaryCosineVectorIndex('/kural-embeddings.bin');
+  const base = import.meta.env.BASE_URL.endsWith('/')
+    ? import.meta.env.BASE_URL
+    : `${import.meta.env.BASE_URL}/`;
+
+  const dataSource = new StaticJsonKuralDataSource(`${base}kurals.json`);
+  const vectorIndex = new FlatBinaryCosineVectorIndex(`${base}kural-embeddings.bin`);
   const embeddingService = new WorkerEmbeddingService();
   const retrievalService = new KuralRetrievalService(dataSource, vectorIndex, embeddingService);
   const speechService = new WebSpeechService();

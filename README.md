@@ -124,7 +124,7 @@ flowchart TD
 ## 🚀 Getting Started
 
 ### Prerequisites
-- **Node.js**: `v18.0.0` or higher
+- **Node.js**: `v24.0.0` or higher (enforced via `.nvmrc`)
 - **npm** or **pnpm** or **yarn**
 - *(Optional for data pipeline)*: **Python 3.10+** and **uv**
 
