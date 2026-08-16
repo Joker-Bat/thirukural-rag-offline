@@ -5,56 +5,13 @@ import { KuralCardList } from './components/kural-card';
 import { EmptyFallback } from './components/empty-fallback';
 import { ModelDownloadModal } from './components/model-download-modal';
 import { useKuralStore } from './stores/use-kural-store';
-import { useRetrieval } from './context/service-context';
 import { Sparkles, Shield, Cpu, Compass } from 'lucide-react';
 
 export const App: React.FC = () => {
-  const {
-    results,
-    hasSearched,
-    isSearching,
-    modelStatus,
-    handleProgress,
-    setModelStatus,
-    setShowDownloadModal,
-  } = useKuralStore();
-
-  const retrievalService = useRetrieval();
+  const { results, hasSearched, isSearching } = useKuralStore();
   const resultsRef = useRef<HTMLDivElement | null>(null);
 
-  // Auto-initialize the on-device model on first mount
-  useEffect(() => {
-    let isMounted = true;
-
-    async function initModel() {
-      if (modelStatus === 'uninitialized') {
-        setShowDownloadModal(true);
-        try {
-          await retrievalService.initialize((progress) => {
-            if (isMounted) handleProgress(progress);
-          });
-          if (isMounted) {
-            setModelStatus('ready');
-            // Brief 400ms delay to smoothly dismiss modal after showing 100%
-            setTimeout(() => {
-              if (isMounted) setShowDownloadModal(false);
-            }, 400);
-          }
-        } catch (err) {
-          console.error('Failed to initialize model on startup:', err);
-          if (isMounted) setModelStatus('error');
-        }
-      }
-    }
-
-    initModel();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [modelStatus, retrievalService, handleProgress, setModelStatus, setShowDownloadModal]);
-
-  // Scroll to results on new search
+  // Scroll to results on search completion
   useEffect(() => {
     if (hasSearched && resultsRef.current) {
       resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -128,7 +85,7 @@ export const App: React.FC = () => {
           </div>
         </main>
 
-        {/* Model Download Progress Dialog (Default Open on First Load, Jitter-Free) */}
+        {/* Model Setup Modal (Info & explicit download button) */}
         <ModelDownloadModal />
 
         {/* Footer */}
