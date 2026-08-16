@@ -82,12 +82,12 @@ ${kural.explanation_en}`;
     <Card
       className={`relative overflow-hidden transition-all ${
         isPrimary
-          ? 'border-terracotta-300/90 bg-gradient-to-b from-[#FDFCF9] to-white shadow-card ring-1 ring-terracotta-100 p-3.5 sm:p-5'
-          : 'border-stone-200/90 bg-white/95 p-3.5 sm:p-5'
+          ? 'border-terracotta-300/90 bg-gradient-to-b from-[#FDFCF9] to-white shadow-card ring-1 ring-terracotta-100 p-3 sm:p-5'
+          : 'border-stone-200/90 bg-white/95 p-3 sm:p-5'
       }`}
     >
       {/* Streamlined Top Metadata Bar */}
-      <div className="flex items-center justify-between gap-2 pb-2.5 mb-2 border-b border-stone-100">
+      <div className="flex items-center justify-between gap-2 pb-2 mb-2 border-b border-stone-100">
         <div className="flex items-center gap-1.5 min-w-0">
           <Badge variant="terracotta" className="font-serif-tamil text-[11px] font-bold px-2 py-0.5 shrink-0">
             குறள் #{kural.id}
@@ -106,7 +106,7 @@ ${kural.explanation_en}`;
       </div>
 
       {/* Chapter Title & Subdivision */}
-      <div className="flex items-start gap-1.5 pb-2">
+      <div className="flex items-start gap-1.5 pb-1.5">
         <BookOpen className="w-3.5 h-3.5 text-terracotta-600 shrink-0 mt-0.5" />
         <div className="text-xs leading-tight">
           <span className="font-bold text-stone-900 font-serif-tamil text-[13px] sm:text-sm">
@@ -118,20 +118,20 @@ ${kural.explanation_en}`;
         </div>
       </div>
 
-      {/* Couplet Section - PURE CSS CONTAINER QUERY FLUID TYPOGRAPHY (Zero JS overhead, identical font size) */}
-      <div className="py-2.5 px-3.5 my-2 rounded-xl bg-parchment-100/90 border-l-4 border-l-terracotta-600 border border-parchment-300/80 shadow-subtle [container-type:inline-size]">
+      {/* Couplet Section - PURE CSS CONTAINER QUERY FLUID TYPOGRAPHY */}
+      <div className="py-2.5 px-3 my-2 rounded-xl bg-parchment-100/90 border-l-4 border-l-terracotta-600 border border-parchment-300/80 shadow-subtle [container-type:inline-size]">
         <div className="w-full text-left space-y-1">
-          {/* Line 1: Strictly 4 words, single horizontal line, left-aligned, auto-scaled via CQI */}
+          {/* Line 1: Strictly 4 words, single horizontal line, left-aligned, auto-scaled via calibrated CQI */}
           <p
             className="font-serif-tamil font-bold text-stone-950 tracking-tight whitespace-nowrap text-left select-text"
-            style={{ fontSize: 'clamp(11px, 4.35cqi, 16.5px)', lineHeight: 1.5 }}
+            style={{ fontSize: 'clamp(9.5px, 3.25cqi, 15px)', lineHeight: 1.55 }}
           >
             {kural.line1}
           </p>
           {/* Line 2: Strictly 3 words, single horizontal line, left-aligned, exact same font size */}
           <p
             className="font-serif-tamil font-bold text-stone-800 tracking-tight whitespace-nowrap text-left select-text"
-            style={{ fontSize: 'clamp(11px, 4.35cqi, 16.5px)', lineHeight: 1.5 }}
+            style={{ fontSize: 'clamp(9.5px, 3.25cqi, 15px)', lineHeight: 1.55 }}
           >
             {kural.line2}
           </p>
@@ -231,7 +231,7 @@ export const KuralCardList: React.FC = () => {
   const isHighConfidence = primaryResult.confidence === 'high';
 
   return (
-    <div className="space-y-3.5 pt-0.5">
+    <div className="space-y-3 pt-0.5">
       {/* Primary Result */}
       <KuralCardItem result={primaryResult} isPrimary={true} />
 
