@@ -86,8 +86,8 @@ ${kural.explanation_en}`;
           : 'border-stone-200/90 bg-white/95 p-3.5 sm:p-5'
       }`}
     >
-      {/* Streamlined Top Metadata Bar (Single Clean Row) */}
-      <div className="flex items-center justify-between gap-2 pb-2.5 mb-2.5 border-b border-stone-100">
+      {/* Streamlined Top Metadata Bar */}
+      <div className="flex items-center justify-between gap-2 pb-2.5 mb-2 border-b border-stone-100">
         <div className="flex items-center gap-1.5 min-w-0">
           <Badge variant="terracotta" className="font-serif-tamil text-[11px] font-bold px-2 py-0.5 shrink-0">
             குறள் #{kural.id}
@@ -118,15 +118,21 @@ ${kural.explanation_en}`;
         </div>
       </div>
 
-      {/* Couplet Section - LEFT ALIGNED, EXACT 2 LINES, NO OVERFLOW OR SCROLL */}
-      <div className="py-2.5 px-3 my-2 rounded-xl bg-parchment-100/90 border-l-4 border-l-terracotta-600 border border-parchment-300/70">
+      {/* Couplet Section - LEFT ALIGNED, MANDATORY 2 LINES (Line 1: 4 words, Line 2: 3 words) */}
+      <div className="py-2.5 px-3.5 my-2 rounded-xl bg-parchment-100/90 border-l-4 border-l-terracotta-600 border border-parchment-300/80 shadow-subtle overflow-hidden">
         <div className="w-full text-left space-y-1">
-          {/* Line 1: 4 words, strictly single line, left-aligned */}
-          <p className="font-bold text-stone-900 font-serif-tamil tracking-tight text-[12px] min-[360px]:text-[13px] min-[390px]:text-[14px] sm:text-[15.5px] leading-snug">
+          {/* Line 1: Strictly 4 words, single horizontal line, left-aligned */}
+          <p
+            className="font-bold text-stone-950 font-serif-tamil tracking-tight whitespace-nowrap overflow-hidden select-text text-left"
+            style={{ fontSize: 'clamp(11.5px, 3.5vw, 16px)', lineHeight: 1.45 }}
+          >
             {kural.line1}
           </p>
-          {/* Line 2: 3 words, strictly single line, left-aligned */}
-          <p className="font-bold text-stone-800 font-serif-tamil tracking-tight text-[12px] min-[360px]:text-[13px] min-[390px]:text-[14px] sm:text-[15.5px] leading-snug">
+          {/* Line 2: Strictly 3 words, single horizontal line, left-aligned */}
+          <p
+            className="font-bold text-stone-800 font-serif-tamil tracking-tight whitespace-nowrap overflow-hidden select-text text-left"
+            style={{ fontSize: 'clamp(11.5px, 3.5vw, 16px)', lineHeight: 1.45 }}
+          >
             {kural.line2}
           </p>
         </div>

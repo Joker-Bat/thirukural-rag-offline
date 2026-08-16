@@ -147,27 +147,31 @@ export const SearchBox: React.FC = () => {
         </div>
       </div>
 
-      {/* Situation Preset Chips (Equal Heights & Clean Grid) */}
+      {/* Situation Preset Chips - Horizontally Scrollable Row (Zero Ellipsis) */}
       <div className="space-y-1.5">
-        <p className="text-[11px] font-semibold tracking-wider text-stone-500 uppercase px-0.5">
-          விரைவு சூழல்கள் (Quick Situations)
-        </p>
-        <div className="grid grid-cols-2 gap-2 sm:gap-2.5">
+        <div className="flex items-center justify-between px-0.5">
+          <p className="text-[11px] font-semibold tracking-wider text-stone-500 uppercase">
+            விரைவு சூழல்கள் (Quick Situations)
+          </p>
+          <span className="text-[10px] text-stone-400 font-sans">← கிடைமட்டமாக நகர்த்தவும் →</span>
+        </div>
+
+        <div className="flex gap-2.5 overflow-x-auto no-scrollbar pb-1.5 pt-0.5 snap-x">
           {PRESET_CHIPS.map((chip, idx) => (
             <button
               key={idx}
               type="button"
               onClick={() => handlePresetClick(chip.query)}
               disabled={isSearching}
-              className="h-full min-h-[70px] sm:min-h-[76px] flex flex-col justify-between text-left p-2.5 sm:p-3 rounded-2xl border border-stone-200/90 bg-white/95 hover:border-terracotta-400 hover:bg-terracotta-50/40 transition-all shadow-subtle group active:scale-[0.98]"
+              className="snap-start shrink-0 min-w-[205px] sm:min-w-[225px] p-3 rounded-2xl border border-stone-200/90 bg-white/95 hover:border-terracotta-400 hover:bg-terracotta-50/40 transition-all shadow-subtle text-left flex flex-col justify-between active:scale-[0.98] group"
             >
-              <div className="flex items-center justify-between w-full">
-                <span className="text-xs sm:text-[13px] font-bold text-stone-800 font-sans-tamil group-hover:text-terracotta-700 truncate pr-1">
+              <div className="flex items-center justify-between w-full pb-1">
+                <span className="text-[13px] sm:text-sm font-bold text-stone-800 font-sans-tamil group-hover:text-terracotta-700 whitespace-nowrap">
                   {chip.ta}
                 </span>
-                <ArrowUpRight className="w-3.5 h-3.5 text-stone-400 group-hover:text-terracotta-600 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 shrink-0" />
+                <ArrowUpRight className="w-3.5 h-3.5 text-stone-400 group-hover:text-terracotta-600 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 shrink-0 ml-2" />
               </div>
-              <span className="text-[10px] sm:text-[11px] text-stone-500 line-clamp-1 mt-1 font-sans">
+              <span className="text-[11px] text-stone-500 font-sans whitespace-nowrap leading-tight">
                 {chip.en}
               </span>
             </button>
