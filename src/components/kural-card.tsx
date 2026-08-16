@@ -6,6 +6,7 @@ import { useKuralStore } from '../stores/use-kural-store';
 import { Card } from './ui/card';
 import { Badge } from './ui/badge';
 import { AccordionItem } from './ui/accordion';
+import { AutoFitLine } from './auto-fit-line';
 
 interface KuralCardProps {
   result: SearchResult;
@@ -92,7 +93,7 @@ ${kural.explanation_en}`;
           <Badge variant="terracotta" className="font-serif-tamil text-[11px] font-bold px-2 py-0.5 shrink-0">
             குறள் #{kural.id}
           </Badge>
-          <span className="text-[11px] text-stone-500 font-sans font-medium truncate">
+          <span className="text-[11px] text-stone-600 font-sans font-medium">
             {kural.pal_ta} ({kural.pal_en})
           </span>
         </div>
@@ -118,23 +119,23 @@ ${kural.explanation_en}`;
         </div>
       </div>
 
-      {/* Couplet Section - LEFT ALIGNED, MANDATORY 2 LINES (Line 1: 4 words, Line 2: 3 words) */}
-      <div className="py-2.5 px-3.5 my-2 rounded-xl bg-parchment-100/90 border-l-4 border-l-terracotta-600 border border-parchment-300/80 shadow-subtle overflow-hidden">
+      {/* Couplet Section - AUTO-FITTING 2 LINES (Line 1: 4 words, Line 2: 3 words) */}
+      <div className="py-2.5 px-3 my-2 rounded-xl bg-parchment-100/90 border-l-4 border-l-terracotta-600 border border-parchment-300/80 shadow-subtle overflow-hidden">
         <div className="w-full text-left space-y-1">
-          {/* Line 1: Strictly 4 words, single horizontal line, left-aligned */}
-          <p
-            className="font-bold text-stone-950 font-serif-tamil tracking-tight whitespace-nowrap overflow-hidden select-text text-left"
-            style={{ fontSize: 'clamp(11.5px, 3.5vw, 16px)', lineHeight: 1.45 }}
-          >
-            {kural.line1}
-          </p>
-          {/* Line 2: Strictly 3 words, single horizontal line, left-aligned */}
-          <p
-            className="font-bold text-stone-800 font-serif-tamil tracking-tight whitespace-nowrap overflow-hidden select-text text-left"
-            style={{ fontSize: 'clamp(11.5px, 3.5vw, 16px)', lineHeight: 1.45 }}
-          >
-            {kural.line2}
-          </p>
+          {/* Line 1: Exactly 4 words, dynamically auto-scaled to fit without wrap or overflow */}
+          <AutoFitLine
+            text={kural.line1}
+            className="font-bold text-stone-950 font-serif-tamil tracking-tight text-left select-text"
+            maxFontSize={17}
+            minFontSize={10.5}
+          />
+          {/* Line 2: Exactly 3 words, dynamically auto-scaled to fit without wrap or overflow */}
+          <AutoFitLine
+            text={kural.line2}
+            className="font-bold text-stone-800 font-serif-tamil tracking-tight text-left select-text"
+            maxFontSize={17}
+            minFontSize={10.5}
+          />
         </div>
       </div>
 
