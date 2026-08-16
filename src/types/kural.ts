@@ -8,6 +8,7 @@ export interface Kural {
   id: number;
   line1: string;
   line2: string;
+  modern_en?: string;
   translation_en: string;
   explanation_en: string;
   couplet_en: string;

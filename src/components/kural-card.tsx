@@ -143,12 +143,12 @@ ${kural.explanation_en}`;
         </div>
       </div>
 
-      {/* English Translation & Explanation */}
+      {/* English Modern Translation & Explanation */}
       <div className="pt-1 pb-2.5 space-y-1">
-        <p className="text-xs italic text-stone-700 font-sans leading-relaxed">
-          "{kural.translation_en}"
+        <p className="text-xs font-medium text-stone-800 font-sans leading-relaxed">
+          "{kural.modern_en || kural.translation_en}"
         </p>
-        {kural.explanation_en && kural.explanation_en !== kural.translation_en && (
+        {kural.explanation_en && kural.explanation_en !== kural.modern_en && (
           <p className="text-[11px] sm:text-xs text-stone-500 leading-relaxed font-sans">
             {kural.explanation_en}
           </p>

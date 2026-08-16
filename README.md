@@ -7,6 +7,7 @@
 
 [![React Version](https://img.shields.io/badge/React-19.2.8-blue?style=flat-square&logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-%3E%3D24.0.0-green?style=flat-square&logo=nodedotjs)](.nvmrc)
 [![Vite](https://img.shields.io/badge/Vite-6.4-646CFF?style=flat-square&logo=vite)](https://vitejs.dev/)
 [![Transformers.js](https://img.shields.io/badge/%F0%9F%A4%97%20Transformers.js-v3.3-yellow?style=flat-square)](https://huggingface.co/docs/transformers.js)
 [![HuggingFace Model](https://img.shields.io/badge/%F0%9F%A4%97%20Model-MiniLM--L12--v2-orange?style=flat-square)](https://huggingface.co/Xenova/paraphrase-multilingual-MiniLM-L12-v2)
@@ -27,18 +28,56 @@ Instead of relying on rigid keyword search or remote cloud LLM APIs, this applic
 - 🔒 **Zero Data Leakage**: Your thoughts, questions, and dilemmas never leave your device.
 - ⚡ **Sub-Millisecond Inference**: Computes cosine similarity across all 1,330 vectors in **$< 2\text{ ms}$**.
 - 📴 **100% Offline Capability**: Once the lightweight neural model (~25MB) is cached on the first visit, the entire app functions indefinitely without an active internet connection.
-- 📚 **Comprehensive Classical Literature**: Every result includes the full classical couplet in traditional Tamil meter, 3 classical commentaries (*Mu. Varadarajan, Solomon Pappaiah, Kalaignar Karunanidhi*), and English translations/explanations.
+- 📚 **Comprehensive Classical Literature**: Every result includes the full classical couplet in traditional Tamil meter, 3 classical commentaries (*Mu. Varadarajan, Solomon Pappaiah, Kalaignar Karunanidhi*), and 21st-century modern English translations.
 
 ---
 
-## 🔗 Models & Open-Source Resources
+## 🔗 Multi-Source Dataset Integration & Attribution
 
-This project is built upon open-source machine learning models and classical literary databases:
+To bridge the gap between ancient literary poetic meter and contemporary everyday human queries, our data pipeline merges and cross-references two authoritative open-source repositories:
 
-- **HuggingFace Embedding Model**: [`Xenova/paraphrase-multilingual-MiniLM-L12-v2`](https://huggingface.co/Xenova/paraphrase-multilingual-MiniLM-L12-v2) — 384-dimensional cross-lingual sentence embedding model quantized for in-browser execution.
-- **In-Browser ML Runtime**: [Transformers.js (`@huggingface/transformers`)](https://github.com/huggingface/transformers.js) — Run state-of-the-art HuggingFace models directly in the browser with ONNX Runtime Web.
-- **Thirukkural Dataset & Commentaries**: [Thirukkural JSON Database (`tk120404/thirukkural`)](https://github.com/tk120404/thirukkural) — Complete corpus of 1,330 Kurals with 3 classical Tamil commentaries (*மு. வரதராசனார், சாலமன் பாப்பையா, கலைஞர் மு. கருணாநிதி*) and English translations.
-- **Vector Embeddings Framework**: [Sentence-Transformers (`UKPLab/sentence-transformers`)](https://github.com/UKPLab/sentence-transformers) — Used for precomputing offline binary dense vectors.
+```mermaid
+flowchart LR
+    subgraph S1 ["Source 1: Classical Tamil Corpus (tk120404)"]
+        A1["1,330 Couplets"]
+        A2["3 Classical Commentaries (Mu. Va, Solomon Pappaiah, Karunanidhi)"]
+        A3["Paal, Iyal, & Athikaram Hierarchies"]
+    end
+
+    subgraph S2 ["Source 2: Modern English Corpus (jjasim)"]
+        B1["21st-Century Direct English Interpretations"]
+        B2["Conversational Vocabulary Alignment"]
+    end
+
+    subgraph Unified ["Unified Corpus & Embedding Pipeline"]
+        C["scripts/prepare-data.py"]
+        D["public/kurals.json (Enriched Corpus)"]
+        E["public/kural-embeddings.bin (384-d Dense Index)"]
+    end
+
+    S1 --> C
+    S2 --> C
+    C --> D
+    C --> E
+```
+
+### Primary Data Sources & Citations:
+1. **Classical Tamil Corpus & Commentaries**:  
+   [Thirukkural JSON Database (`tk120404/thirukkural`)](https://github.com/tk120404/thirukkural)  
+   - Provides all 1,330 verses in classical Tamil meter with full hierarchical categorization (*பால், இயல், அதிகாரம்*).
+   - Contains 3 scholarly Tamil commentaries:
+     - **மு. வரதராசனார் உரை** (Dr. Mu. Varadarajan) — Authoritative scholarly commentary.
+     - **சாலமன் பாப்பையா உரை** (Solomon Pappaiah) — Accessible conversational Tamil commentary.
+     - **கலைஞர் மு. கருணாநிதி உரை** (Kalaignar M. Karunanidhi) — Poetic prose commentary.
+
+2. **21st-Century Modern English Translation Corpus**:  
+   [Thirukkural English Translation Dataset (`jjasim/Thirukkural-English-Translation-Dataset`)](https://github.com/jjasim/Thirukkural-English-Translation-Dataset)  
+   - Contributes clean, punchy, contemporary English interpretations (`modern_en`) for all 1,330 couplets.
+   - Replaces archaic 19th-century Victorian vocabulary with active modern terms, dramatically improving cross-lingual vector alignment for modern search queries.
+
+3. **Neural Embedding Engine**:  
+   [`Xenova/paraphrase-multilingual-MiniLM-L12-v2`](https://huggingface.co/Xenova/paraphrase-multilingual-MiniLM-L12-v2) via [Transformers.js (`@huggingface/transformers`)](https://github.com/huggingface/transformers.js)  
+   - High-speed 384-dimensional cross-lingual sentence embedding model running in-browser via WebAssembly / WebGPU.
 
 ---
 
@@ -61,7 +100,7 @@ flowchart TD
 
     subgraph Storage ["On-Device Storage & Precomputed Assets"]
         I["kural-embeddings.bin (2.04 MB Float32Array)"]
-        J["kurals.json (2.76 MB Corpus)"]
+        J["kurals.json (3.05 MB Corpus)"]
         K["Browser Cache / IndexedDB (Model Weights ~25MB)"]
     end
 
@@ -88,11 +127,11 @@ flowchart TD
 3. **Strict Classical 2-Line Couplet Typography**:
    - Character-aware dynamic CSS Container Queries (`cqi`) mathematically scale the font size so that **Line 1 (4 words)** and **Line 2 (3 words)** are guaranteed to fit on strictly two left-aligned lines with **zero overflow, zero wrapping, and zero horizontal scrolling** across all screen sizes (320px to 4K).
 
-4. **3 Classical Tamil Commentaries + English Translation**:
+4. **3 Classical Tamil Commentaries + 21st-Century Modern English Translation**:
    - **மு. வரதராசனார் உரை** (Mu. Varadarajan) — Primary commentary
-   - **சாலமன் பாப்பையா உரை** (Solomon Pappaiah) — Accessible commentary
+   - **சாலமன் பாப்பையா உரை** (Solomon Pappaiah) — Conversational commentary
    - **கலைஞர் மு. கருணாநிதி உரை** (M. Karunanidhi) — Poetic prose commentary
-   - Complete English translation and philosophical explanation.
+   - **Modern English Interpretation** + Classical explanation.
 
 5. **Audio Speech Synthesis**:
    - Integrated Web Speech API for Tamil voice recitation of couplets and commentaries.
@@ -109,12 +148,14 @@ flowchart TD
 | :--- | :--- | :--- | :--- |
 | **Frontend Framework** | React | `19.2.8` | [react.dev](https://react.dev/) |
 | **Language** | TypeScript | `5.7+` | [typescriptlang.org](https://www.typescriptlang.org/) |
+| **Runtime Environment** | Node.js | `>=24.0.0` (Enforced via `.nvmrc`) | [nodejs.org](https://nodejs.org/) |
 | **Build Tool & Dev Server** | Vite | `6.4+` | [vitejs.dev](https://vitejs.dev/) |
 | **State Management** | Zustand | `5.0+` | [zustand-demo.pmnd.rs](https://zustand-demo.pmnd.rs/) |
 | **Styling & Design System** | Tailwind CSS / Vanilla CSS | Tailwind CSS v4 | [tailwindcss.com](https://tailwindcss.com/) |
 | **On-Device AI Engine** | Transformers.js (ONNX Runtime) | `@huggingface/transformers ^3.3.3` | [Transformers.js GitHub](https://github.com/huggingface/transformers.js) |
 | **Embedding Model** | Multilingual MiniLM-L12-v2 | `Xenova/paraphrase-multilingual-MiniLM-L12-v2` | [HuggingFace Model Card](https://huggingface.co/Xenova/paraphrase-multilingual-MiniLM-L12-v2) |
-| **Literature Dataset** | Thirukkural JSON Database | 1,330 Kurals with 3 Urais | [thirukkural GitHub Repo](https://github.com/tk120404/thirukkural) |
+| **Tamil Corpus Dataset** | Thirukkural JSON Database | 1,330 Kurals with 3 Urais | [tk120404/thirukkural](https://github.com/tk120404/thirukkural) |
+| **Modern English Dataset** | Thirukkural Modern English | 1,330 Modern Interpretations | [jjasim/Thirukkural-English-Translation-Dataset](https://github.com/jjasim/Thirukkural-English-Translation-Dataset) |
 | **PWA & Offline** | Vite Plugin PWA (Workbox) | `vite-plugin-pwa ^0.21.2` | [vite-pwa-org](https://vite-pwa-org.netlify.app/) |
 | **Icons & Audio** | Lucide React / Web Speech API | `lucide-react`, Native Browser SpeechSynthesis | [lucide.dev](https://lucide.dev/) |
 | **Data Ingestion Pipeline** | Python / uv | Python 3.12, `sentence-transformers`, `numpy` | [Sentence-Transformers](https://github.com/UKPLab/sentence-transformers) |
@@ -138,17 +179,22 @@ flowchart TD
    cd thirukural-rag-offline
    ```
 
-2. **Install frontend dependencies**:
+2. **Ensure Node 24 is active**:
+   ```bash
+   nvm use
+   ```
+
+3. **Install frontend dependencies**:
    ```bash
    npm install
    ```
 
-3. **Start the local development server**:
+4. **Start the local development server**:
    ```bash
    npm run dev
    ```
 
-4. **Open in your browser**:
+5. **Open in your browser**:
    Navigate to [http://localhost:5173](http://localhost:5173).
 
 ---
@@ -167,40 +213,39 @@ npm run preview
 
 ---
 
-## 🐍 Data Ingestion & Precomputed Embeddings Pipeline (Optional)
+## 🐍 Data Ingestion Pipeline
 
-The precomputed embeddings (`public/kural-embeddings.bin`) and corpus (`public/kurals.json`) are already generated and committed. If you wish to re-generate them or change the embedding model:
+The precomputed embeddings (`public/kural-embeddings.bin`) and merged corpus (`public/kurals.json`) are generated automatically by `scripts/prepare-data.py`.
 
-1. Navigate to the project root.
-2. Run the ingestion pipeline using `uv`:
-   ```bash
-   uv run python scripts/prepare-data.py
-   ```
-3. Run the automated semantic retrieval test suite:
-   ```bash
-   uv run python scripts/test-retrieval.py
-   ```
+To re-run the multi-source dataset merger and compute vector embeddings locally:
+
+```bash
+uv run --with numpy --with sentence-transformers --with requests python scripts/prepare-data.py
+```
 
 ---
 
 ## 📂 Project Structure
 
 ```text
-thirukural-rag/
+thirukural-rag-offline/
+├── .github/
+│   └── workflows/
+│       └── deploy.yml            # Automated GitHub Pages CI/CD workflow
 ├── public/
-│   ├── brand-banner.jpg          # Brand identity banner
+│   ├── brand-banner.jpg          # High-resolution brand identity banner
 │   ├── favicon.svg               # Classical terracotta logo
-│   ├── kurals.json               # 1,330 Kurals with 3 commentaries & English
+│   ├── kurals.json               # Merged 1,330 Kurals with 3 commentaries & modern English
 │   └── kural-embeddings.bin      # Precomputed 1330x384 Float32 binary dense index
 ├── scripts/
-│   ├── prepare-data.py           # Ingestion & vector generation pipeline
+│   ├── prepare-data.py           # Multi-source dataset merger & vector pipeline
 │   └── test-retrieval.py         # Automated semantic benchmark tests
 ├── src/
 │   ├── components/
 │   │   ├── ui/                   # Reusable atomic UI components (Button, Badge, Card, Progress, Accordion)
 │   │   ├── empty-fallback.tsx    # Low confidence / no results fallback
 │   │   ├── header.tsx            # Sticky header with offline status pill
-│   │   ├── kural-card.tsx        # Couplet cards with 2-line CQI fluid typography & commentaries
+│   │   ├── kural-card.tsx        # Couplet cards with 2-line CQI fluid typography, modern English & commentaries
 │   │   ├── model-download-modal.tsx # On-device model onboarding & live progress dialog
 │   │   └── search-box.tsx        # Semantic search textarea & horizontal scroll situation presets
 │   ├── context/
@@ -226,11 +271,14 @@ thirukural-rag/
 │   ├── app.tsx                   # Main editorial app shell & layout
 │   ├── index.css                 # Classical parchment design tokens & ambient gradients
 │   ├── main.tsx                  # Application bootstrap & PWA registration
+│   ├── vite-env.d.ts             # Vite client environment types
 │   └── worker.ts                 # Transformers.js Web Worker feature extraction pipeline
-├── package.json
+├── .nvmrc                        # Node 24 environment declaration
+├── LICENSE                       # MIT License
+├── package.json                  # Dependencies & Node >=24 engine declaration
 ├── tsconfig.json
-├── vite.config.ts
-└── README.md
+├── vite.config.ts                # Vite config with GitHub Pages base path & PWA Workbox
+└── README.md                     # Comprehensive documentation & architectural manual
 ```
 
 ---
