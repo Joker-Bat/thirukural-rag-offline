@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { Search, Loader2, ArrowUpRight, CornerDownLeft } from 'lucide-react';
+import { Search, Loader2, ArrowUpRight, CornerDownLeft, ChevronRight } from 'lucide-react';
 import { useKuralStore } from '../stores/use-kural-store';
 import { useRetrieval } from '../context/service-context';
 import { Button } from './ui/button';
@@ -7,22 +7,27 @@ import { Button } from './ui/button';
 const PRESET_CHIPS = [
   {
     ta: 'முயற்சி தோல்வி',
-    en: 'Failure despite hard work',
+    en: 'Facing failure',
     query: 'Handling failure and staying resilient despite hard work and effort (முயற்சி செய்தும் தோல்வி)'
   },
   {
+    ta: 'முடிவு எடுக்க',
+    en: 'Big decision',
+    query: 'Thinking thoroughly before making a decision and planning action (முடிவு எடுத்தல், சிந்தித்து செயல்படுதல்)'
+  },
+  {
     ta: 'நட்பு துரோகம்',
-    en: 'Betrayal by a trusted friend',
+    en: 'Friend betrayal',
     query: 'Dealing with betrayal, deceit, and false friendship (நட்பு துரோகம் மற்றும் போலியான நண்பர்கள்)'
   },
   {
-    ta: 'சினம் தவிர்த்தல்',
-    en: 'Controlling anger & rage',
+    ta: 'கோபம் தணிக்க',
+    en: 'Controlling anger',
     query: 'How to control anger and overcome the urge to retaliate (சினம் மற்றும் கோபம் கட்டுப்படுத்துதல்)'
   },
   {
-    ta: 'நேர்மையான செல்வம்',
-    en: 'Ethical wealth & living',
+    ta: 'நேர்மை செல்வம்',
+    en: 'Ethical living',
     query: 'Earning wealth honestly and avoiding unethical shortcuts (நேர்மையான வழியில் செல்வம் சேர்த்தல்)'
   },
 ];
@@ -147,31 +152,33 @@ export const SearchBox: React.FC = () => {
         </div>
       </div>
 
-      {/* Situation Preset Chips - Horizontally Scrollable Row (Zero Ellipsis) */}
-      <div className="space-y-1.5">
+      {/* Situation Preset Chips - Clean, Concise Horizontally Scrollable Row */}
+      <div className="space-y-2">
         <div className="flex items-center justify-between px-0.5">
-          <p className="text-[11px] font-semibold tracking-wider text-stone-500 uppercase">
-            விரைவு சூழல்கள் (Quick Situations)
+          <p className="text-[11px] font-semibold tracking-wider text-stone-500 uppercase font-sans">
+            விரைவு சூழல்கள் <span className="font-normal text-stone-400 text-[10px]">· Quick Situations</span>
           </p>
-          <span className="text-[10px] text-stone-400 font-sans">← கிடைமட்டமாக நகர்த்தவும் →</span>
+          <span className="text-[10px] text-stone-400 font-sans flex items-center gap-0.5">
+            Swipe <ChevronRight className="w-2.5 h-2.5 opacity-60" />
+          </span>
         </div>
 
-        <div className="flex gap-2.5 overflow-x-auto no-scrollbar pb-1.5 pt-0.5 snap-x">
+        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 pt-0.5 snap-x">
           {PRESET_CHIPS.map((chip, idx) => (
             <button
               key={idx}
               type="button"
               onClick={() => handlePresetClick(chip.query)}
               disabled={isSearching}
-              className="snap-start shrink-0 min-w-[205px] sm:min-w-[225px] p-3 rounded-2xl border border-stone-200/90 bg-white/95 hover:border-terracotta-400 hover:bg-terracotta-50/40 transition-all shadow-subtle text-left flex flex-col justify-between active:scale-[0.98] group"
+              className="snap-start shrink-0 min-w-[142px] sm:min-w-[160px] p-2.5 sm:p-3 rounded-2xl border border-stone-200/90 bg-white/95 hover:border-terracotta-400 hover:bg-terracotta-50/40 transition-all shadow-subtle text-left flex flex-col justify-between active:scale-[0.98] group"
             >
-              <div className="flex items-center justify-between w-full pb-1">
-                <span className="text-[13px] sm:text-sm font-bold text-stone-800 font-sans-tamil group-hover:text-terracotta-700 whitespace-nowrap">
+              <div className="flex items-center justify-between w-full pb-0.5">
+                <span className="text-xs sm:text-[13px] font-bold text-stone-800 font-sans-tamil group-hover:text-terracotta-700 whitespace-nowrap">
                   {chip.ta}
                 </span>
-                <ArrowUpRight className="w-3.5 h-3.5 text-stone-400 group-hover:text-terracotta-600 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 shrink-0 ml-2" />
+                <ArrowUpRight className="w-3 h-3 text-stone-400 group-hover:text-terracotta-600 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 shrink-0 ml-1.5" />
               </div>
-              <span className="text-[11px] text-stone-500 font-sans whitespace-nowrap leading-tight">
+              <span className="text-[10px] sm:text-[11px] text-stone-500 font-sans whitespace-nowrap leading-tight">
                 {chip.en}
               </span>
             </button>
