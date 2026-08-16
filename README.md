@@ -134,8 +134,8 @@ flowchart TD
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/your-username/thirukural-rag.git
-   cd thirukural-rag
+   git clone https://github.com/Joker-Bat/thirukural-rag-offline.git
+   cd thirukural-rag-offline
    ```
 
 2. **Install frontend dependencies**:
