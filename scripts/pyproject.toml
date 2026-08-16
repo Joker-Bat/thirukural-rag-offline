@@ -5,7 +5,7 @@ description = "Thirukkural dataset ingestion, normalization, and multilingual em
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "sentence-transformers>=3.0.0",
-    "numpy>=1.24.0",
-    "requests>=2.31.0"
+    "sentence-transformers>=3.4.1",
+    "numpy>=2.0.0",
+    "requests>=2.32.3"
 ]

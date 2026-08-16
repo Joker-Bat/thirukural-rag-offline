@@ -457,9 +457,9 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "numpy", specifier = ">=1.24.0" },
-    { name = "requests", specifier = ">=2.31.0" },
-    { name = "sentence-transformers", specifier = ">=3.0.0" },
+    { name = "numpy", specifier = ">=2.0.0" },
+    { name = "requests", specifier = ">=2.32.3" },
+    { name = "sentence-transformers", specifier = ">=3.4.1" },
 ]
 
 [[package]]
