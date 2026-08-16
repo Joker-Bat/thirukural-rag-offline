@@ -9,6 +9,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.4-646CFF?style=flat-square&logo=vite)](https://vitejs.dev/)
 [![Transformers.js](https://img.shields.io/badge/%F0%9F%A4%97%20Transformers.js-v3.3-yellow?style=flat-square)](https://huggingface.co/docs/transformers.js)
+[![HuggingFace Model](https://img.shields.io/badge/%F0%9F%A4%97%20Model-MiniLM--L12--v2-orange?style=flat-square)](https://huggingface.co/Xenova/paraphrase-multilingual-MiniLM-L12-v2)
 [![PWA](https://img.shields.io/badge/PWA-100%25%20Offline-emerald?style=flat-square&logo=pwa)](https://web.dev/progressive-web-apps/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-orange?style=flat-square)](LICENSE)
 
@@ -27,6 +28,17 @@ Instead of relying on rigid keyword search or remote cloud LLM APIs, this applic
 - ⚡ **Sub-Millisecond Inference**: Computes cosine similarity across all 1,330 vectors in **$< 2\text{ ms}$**.
 - 📴 **100% Offline Capability**: Once the lightweight neural model (~25MB) is cached on the first visit, the entire app functions indefinitely without an active internet connection.
 - 📚 **Comprehensive Classical Literature**: Every result includes the full classical couplet in traditional Tamil meter, 3 classical commentaries (*Mu. Varadarajan, Solomon Pappaiah, Kalaignar Karunanidhi*), and English translations/explanations.
+
+---
+
+## 🔗 Models & Open-Source Resources
+
+This project is built upon open-source machine learning models and classical literary databases:
+
+- **HuggingFace Embedding Model**: [`Xenova/paraphrase-multilingual-MiniLM-L12-v2`](https://huggingface.co/Xenova/paraphrase-multilingual-MiniLM-L12-v2) — 384-dimensional cross-lingual sentence embedding model quantized for in-browser execution.
+- **In-Browser ML Runtime**: [Transformers.js (`@huggingface/transformers`)](https://github.com/huggingface/transformers.js) — Run state-of-the-art HuggingFace models directly in the browser with ONNX Runtime Web.
+- **Thirukkural Dataset & Commentaries**: [Thirukkural JSON Database (`tk120404/thirukkural`)](https://github.com/tk120404/thirukkural) — Complete corpus of 1,330 Kurals with 3 classical Tamil commentaries (*மு. வரதராசனார், சாலமன் பாப்பையா, கலைஞர் மு. கருணாநிதி*) and English translations.
+- **Vector Embeddings Framework**: [Sentence-Transformers (`UKPLab/sentence-transformers`)](https://github.com/UKPLab/sentence-transformers) — Used for precomputing offline binary dense vectors.
 
 ---
 
@@ -66,7 +78,7 @@ flowchart TD
 ## ✨ Key Features
 
 1. **On-Device Neural Semantic Search**:
-   - Embeds user queries using a quantized multilingual sentence transformer model (`Xenova/paraphrase-multilingual-MiniLM-L12-v2`).
+   - Embeds user queries using a quantized multilingual sentence transformer model ([`Xenova/paraphrase-multilingual-MiniLM-L12-v2`](https://huggingface.co/Xenova/paraphrase-multilingual-MiniLM-L12-v2)).
    - Cross-lingual semantic alignment supports **Tamil, English, and Tanglish** queries.
 
 2. **Precomputed Dense Binary Vector Index**:
@@ -93,18 +105,19 @@ flowchart TD
 
 ## 🛠️ Technology Stack
 
-| Domain | Technology | Version / Specification |
-| :--- | :--- | :--- |
-| **Frontend Framework** | React | `19.2.8` |
-| **Language** | TypeScript | `5.7+` |
-| **Build Tool & Dev Server** | Vite | `6.4+` |
-| **State Management** | Zustand | `5.0+` |
-| **Styling & Design System** | Tailwind CSS / Vanilla CSS | Tailwind CSS v4, Google Noto Serif/Sans Tamil |
-| **On-Device AI Engine** | Transformers.js (ONNX Runtime Web) | `@huggingface/transformers ^3.3.3` |
-| **Embedding Model** | Multilingual MiniLM-L12-v2 | `Xenova/paraphrase-multilingual-MiniLM-L12-v2` (Quantized ~25MB) |
-| **PWA & Offline** | Vite Plugin PWA (Workbox) | `vite-plugin-pwa ^0.21.2` |
-| **Icons & Audio** | Lucide React / Web Speech API | `lucide-react`, Native Browser SpeechSynthesis |
-| **Data Ingestion Pipeline** | Python / uv | Python 3.12, `sentence-transformers`, `numpy` |
+| Domain | Technology | Version / Specification | Resource Link |
+| :--- | :--- | :--- | :--- |
+| **Frontend Framework** | React | `19.2.8` | [react.dev](https://react.dev/) |
+| **Language** | TypeScript | `5.7+` | [typescriptlang.org](https://www.typescriptlang.org/) |
+| **Build Tool & Dev Server** | Vite | `6.4+` | [vitejs.dev](https://vitejs.dev/) |
+| **State Management** | Zustand | `5.0+` | [zustand-demo.pmnd.rs](https://zustand-demo.pmnd.rs/) |
+| **Styling & Design System** | Tailwind CSS / Vanilla CSS | Tailwind CSS v4 | [tailwindcss.com](https://tailwindcss.com/) |
+| **On-Device AI Engine** | Transformers.js (ONNX Runtime) | `@huggingface/transformers ^3.3.3` | [Transformers.js GitHub](https://github.com/huggingface/transformers.js) |
+| **Embedding Model** | Multilingual MiniLM-L12-v2 | `Xenova/paraphrase-multilingual-MiniLM-L12-v2` | [HuggingFace Model Card](https://huggingface.co/Xenova/paraphrase-multilingual-MiniLM-L12-v2) |
+| **Literature Dataset** | Thirukkural JSON Database | 1,330 Kurals with 3 Urais | [thirukkural GitHub Repo](https://github.com/tk120404/thirukkural) |
+| **PWA & Offline** | Vite Plugin PWA (Workbox) | `vite-plugin-pwa ^0.21.2` | [vite-pwa-org](https://vite-pwa-org.netlify.app/) |
+| **Icons & Audio** | Lucide React / Web Speech API | `lucide-react`, Native Browser SpeechSynthesis | [lucide.dev](https://lucide.dev/) |
+| **Data Ingestion Pipeline** | Python / uv | Python 3.12, `sentence-transformers`, `numpy` | [Sentence-Transformers](https://github.com/UKPLab/sentence-transformers) |
 
 ---
 
