@@ -32,6 +32,40 @@ Instead of relying on rigid keyword search or remote cloud LLM APIs, this applic
 
 ---
 
+## 🧠 Intelligent Multi-Route Hybrid Search Engine
+
+To accommodate different user intents, the search engine incorporates a modular **Strategy Pattern Pipeline** that intelligently routes queries:
+
+```mermaid
+flowchart TD
+    Q["User Search Input"] --> Router{"KuralRetrievalService (Router)"}
+    
+    Router -->|1. Number Query e.g. 417, #417, குறள் 417| S1["DirectNumberStrategy"]
+    Router -->|2. Chapter Query e.g. Chapter 47, அறிவுடைமை, Wisdom| S2["AthikaramStrategy"]
+    Router -->|3. Situational Query / Question| S3["SemanticRagStrategy"]
+
+    S1 --> O1["Instant O(1) Verse Lookup (<0.01ms)"]
+    S2 --> O2["Full 10-Kural Chapter View with Banner"]
+    S3 --> O3["Quantized Dense Vector Dot Product (<2ms)"]
+
+    O1 --> UI["Render Interactive Couplet Cards"]
+    O2 --> UI
+    O3 --> UI
+```
+
+### Search Routes:
+1. **Direct Kural Number Lookup (`DirectNumberStrategy`)**:
+   - Inputs: `417`, `#417`, `kural 417`, `குறள் 417`, `kural #417`, `417 kural`, `417th kural`
+   - Validates range ($1 \le N \le 1330$) and returns the verse with **100% Direct Match** in **$< 0.01\text{ ms}$**.
+2. **Athikaram (Chapter) Lookup (`AthikaramStrategy`)**:
+   - Inputs: `Chapter 47`, `அதிகாரம் 47`, `அறிவுடைமை`, `Wisdom`, `Therindhuseyalvakai`
+   - Automatically returns **all 10 couplets** of that chapter with a dedicated Chapter Banner.
+3. **Situational Semantic RAG (`SemanticRagStrategy`)**:
+   - For free-form questions, life dilemmas, and situational descriptions in **English, Tamil, and Tanglish**.
+   - Blends dense 384-dimensional cosine similarity with keyword boosting, **guaranteeing Top-K wisdom matches** without dropping to blank screens.
+
+---
+
 ## 🔗 Multi-Source Dataset Integration & Attribution
 
 To bridge the gap between ancient literary poetic meter and contemporary everyday human queries, our data pipeline merges and cross-references two authoritative open-source repositories:
@@ -244,10 +278,10 @@ thirukural-rag-offline/
 │   ├── components/
 │   │   ├── ui/                   # Reusable atomic UI components (Button, Badge, Card, Progress, Accordion)
 │   │   ├── empty-fallback.tsx    # Low confidence / no results fallback
-│   │   ├── header.tsx            # Sticky header with offline status pill
+│   │   ├── header.tsx            # Sticky header with offline status pill & popover
 │   │   ├── kural-card.tsx        # Couplet cards with 2-line CQI fluid typography, modern English & commentaries
 │   │   ├── model-download-modal.tsx # On-device model onboarding & live progress dialog
-│   │   └── search-box.tsx        # Semantic search textarea & horizontal scroll situation presets
+│   │   └── search-box.tsx        # Multi-route search textarea & horizontal scroll situation presets
 │   ├── context/
 │   │   └── service-context.tsx   # React Dependency Injection provider
 │   ├── services/
@@ -255,11 +289,16 @@ thirukural-rag-offline/
 │   │   │   ├── data-source.interface.ts
 │   │   │   ├── embedding-service.interface.ts
 │   │   │   ├── retrieval-service.interface.ts
+│   │   │   ├── search-strategy.interface.ts
 │   │   │   ├── speech-service.interface.ts
 │   │   │   └── vector-index.interface.ts
+│   │   ├── strategies/           # Multi-route search strategy implementations
+│   │   │   ├── athikaram-strategy.ts     # Chapter name / number search (all 10 Kurals)
+│   │   │   ├── direct-number-strategy.ts # Instant O(1) Kural number lookup
+│   │   │   └── semantic-rag-strategy.ts  # Dense vector dot product + keyword synergy
 │   │   ├── container.ts          # Dependency Injection service registry
 │   │   ├── flat-binary-cosine-vector-index.ts # In-browser dot-product vector search
-│   │   ├── kural-retrieval-service.ts         # Orchestrator for retrieval pipeline
+│   │   ├── kural-retrieval-service.ts         # Multi-route retrieval orchestrator
 │   │   ├── static-json-kural-data-source.ts   # Kural corpus loader
 │   │   ├── web-speech-service.ts              # Tamil audio synthesis
 │   │   └── worker-embedding-service.ts        # Web Worker communication manager
