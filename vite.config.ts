@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import basicSsl from '@vitejs/plugin-basic-ssl';
 import { VitePWA } from 'vite-plugin-pwa';
 import path from 'path';
 
@@ -15,7 +14,6 @@ export default defineConfig({
   },
   plugins: [
     react(),
-    basicSsl(), // Provides local HTTPS for full PWA & Service Worker support on mobile
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'kurals.json', 'kural-embeddings.bin'],
