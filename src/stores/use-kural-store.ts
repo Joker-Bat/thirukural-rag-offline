@@ -36,7 +36,7 @@ export const useKuralStore = create<KuralState>((set) => ({
   modelStatus: 'uninitialized',
   downloadProgress: 0,
   currentLoadingFile: undefined,
-  showDownloadModal: false,
+  showDownloadModal: true, // Default open on startup for transparent first-time setup
   expandedRelated: false,
   activeSpeechId: null,
   isOffline: typeof navigator !== 'undefined' ? !navigator.onLine : false,
@@ -44,18 +44,39 @@ export const useKuralStore = create<KuralState>((set) => ({
   setQuery: (query) => set({ query }),
   setIsSearching: (isSearching) => set({ isSearching }),
   setResults: (results) => set({ results, hasSearched: true, isSearching: false }),
-  setModelStatus: (modelStatus) => set({ modelStatus }),
+  setModelStatus: (modelStatus) =>
+    set((state) => ({
+      modelStatus,
+      downloadProgress: modelStatus === 'ready' ? 100 : state.downloadProgress,
+    })),
   handleProgress: (p) => {
-    let pct = 0;
-    if (typeof p.progress === 'number') {
-      pct = Math.round(p.progress);
-    } else if (p.loaded && p.total && p.total > 0) {
-      pct = Math.round((p.loaded / p.total) * 100);
-    }
-    set({
-      modelStatus: 'downloading',
-      downloadProgress: Math.min(100, Math.max(0, pct)),
-      currentLoadingFile: p.file || undefined,
+    set((state) => {
+      let rawPct = 0;
+      if (typeof p.progress === 'number') {
+        rawPct = p.progress;
+      } else if (p.loaded && p.total && p.total > 0) {
+        rawPct = (p.loaded / p.total) * 100;
+      }
+
+      // Calculate smooth monotonic percentage across all model sub-files
+      let effectivePct = state.downloadProgress;
+      const fileName = p.file || '';
+
+      if (fileName.includes('.onnx') || fileName.includes('model')) {
+        // Main ONNX model takes 10% - 95%
+        effectivePct = Math.max(state.downloadProgress, Math.round(10 + rawPct * 0.85));
+      } else if (fileName.includes('tokenizer') || fileName.includes('json')) {
+        // Tokenizer/config takes 2% - 10%
+        effectivePct = Math.max(state.downloadProgress, Math.min(10, Math.round(rawPct * 0.1)));
+      } else {
+        effectivePct = Math.max(state.downloadProgress, Math.round(rawPct));
+      }
+
+      return {
+        modelStatus: 'downloading',
+        downloadProgress: Math.min(99, Math.max(state.downloadProgress, effectivePct)),
+        currentLoadingFile: p.file || state.currentLoadingFile,
+      };
     });
   },
   setShowDownloadModal: (showDownloadModal) => set({ showDownloadModal }),

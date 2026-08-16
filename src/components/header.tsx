@@ -20,8 +20,8 @@ export const Header: React.FC = () => {
   }, [setIsOffline]);
 
   return (
-    <header className="sticky top-0 z-30 bg-parchment-50/95 backdrop-blur-md border-b border-stone-200/80 px-4 py-3.5 transition-all">
-      <div className="max-w-md mx-auto flex items-center justify-between">
+    <header className="sticky top-0 z-30 bg-parchment-50/95 backdrop-blur-md border-b border-stone-200/80 px-4 sm:px-6 py-3.5 transition-all">
+      <div className="w-full flex items-center justify-between">
         <div className="flex items-center space-x-2.5">
           <div className="w-10 h-10 rounded-xl bg-terracotta-600 flex items-center justify-center text-white shadow-sm">
             <BookOpen className="w-5 h-5" />

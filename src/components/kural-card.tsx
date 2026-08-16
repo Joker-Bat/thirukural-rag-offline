@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Volume2, VolumeX, Copy, Check, Share2, Layers } from 'lucide-react';
+import { Volume2, VolumeX, Copy, Check, Share2, Layers, BookOpen } from 'lucide-react';
 import { SearchResult } from '../types/kural';
 import { useSpeech } from '../context/service-context';
 import { useKuralStore } from '../stores/use-kural-store';
@@ -40,7 +40,8 @@ export const KuralCardItem: React.FC<KuralCardProps> = ({ result, isPrimary = fa
 
   const handleCopy = async () => {
     const textToCopy = `திருக்குறள் #${kural.id}
-அதிகாரம்: ${kural.athikaram_ta} (${kural.athikaram_en})
+அதிகாரம் ${kural.athikaram_num}: ${kural.athikaram_ta} (${kural.athikaram_en})
+பால்: ${kural.pal_ta} (${kural.pal_en}) | இயல்: ${kural.iyal_ta} (${kural.iyal_en})
 
 ${kural.line1}
 ${kural.line2}
@@ -49,7 +50,7 @@ ${kural.line2}
 ${kural.urais.mu_va}
 
 English:
-${kural.translation_en}
+"${kural.translation_en}"
 ${kural.explanation_en}`;
 
     try {
@@ -66,7 +67,7 @@ ${kural.explanation_en}`;
       try {
         await navigator.share({
           title: `திருக்குறள் #${kural.id} - ${kural.athikaram_ta}`,
-          text: `${kural.line1}\n${kural.line2}\n\nஉரை: ${kural.urais.mu_va}\n\nEnglish: ${kural.translation_en}`,
+          text: `${kural.line1}\n${kural.line2}\n\nஉரை: ${kural.urais.mu_va}\n\nEnglish: "${kural.translation_en}"`,
           url: window.location.href,
         });
       } catch {
@@ -81,58 +82,77 @@ ${kural.explanation_en}`;
     <Card
       className={`relative overflow-hidden transition-all ${
         isPrimary
-          ? 'border-terracotta-200/90 bg-gradient-to-b from-parchment-50 to-white shadow-card ring-1 ring-terracotta-100'
-          : 'border-stone-200/90 bg-white/95'
+          ? 'border-terracotta-300/80 bg-gradient-to-b from-[#FDFCF9] to-white shadow-card ring-1 ring-terracotta-100 p-5 sm:p-6'
+          : 'border-stone-200/90 bg-white/95 p-4 sm:p-5'
       }`}
     >
-      {/* Top Meta Header */}
-      <div className="flex items-center justify-between gap-2 pb-3 mb-3 border-b border-stone-100">
-        <div className="flex flex-wrap items-center gap-1.5">
-          <Badge variant="terracotta" className="font-serif-tamil text-[11px] font-semibold">
-            குறள் #{kural.id}
+      {/* Comprehensive Header with No Truncation */}
+      <div className="pb-3 mb-3 border-b border-stone-200/70 space-y-2">
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <Badge variant="terracotta" className="font-serif-tamil text-xs font-bold px-2.5 py-0.5">
+              குறள் #{kural.id}
+            </Badge>
+            <Badge variant="stone" className="text-[11px] font-medium text-stone-600 px-2 py-0.5">
+              {kural.pal_ta} ({kural.pal_en})
+            </Badge>
+          </div>
+
+          <Badge
+            variant={matchPercent >= 60 ? 'terracotta' : 'stone'}
+            className="text-xs font-mono font-bold px-2.5 py-0.5 shrink-0"
+          >
+            {matchPercent}% Match
           </Badge>
-          <span className="text-xs text-stone-600 font-medium font-serif-tamil truncate max-w-[170px]">
-            {kural.athikaram_ta} ({kural.athikaram_en})
-          </span>
         </div>
 
-        <Badge
-          variant={matchPercent >= 60 ? 'terracotta' : 'stone'}
-          className="text-[11px] font-mono shrink-0 font-semibold"
-        >
-          {matchPercent}% Match
-        </Badge>
+        {/* Full Chapter Details - Fully Visible Without Ellipsis */}
+        <div className="flex items-start gap-1.5 pt-0.5">
+          <BookOpen className="w-4 h-4 text-terracotta-600 shrink-0 mt-0.5" />
+          <div className="text-xs leading-snug">
+            <span className="font-bold text-stone-900 font-serif-tamil text-sm">
+              அதிகாரம் {kural.athikaram_num}: {kural.athikaram_ta}
+            </span>
+            <span className="text-stone-500 font-sans ml-1.5 text-xs">
+              ({kural.athikaram_en} • {kural.iyal_ta})
+            </span>
+          </div>
+        </div>
       </div>
 
-      {/* Couplet Section */}
-      <div className="py-2 px-3.5 my-2 rounded-xl bg-parchment-100/70 border border-parchment-300/60">
-        <p className="text-base font-bold text-stone-900 font-serif-tamil leading-relaxed tracking-wide">
-          {kural.line1}
-        </p>
-        <p className="text-base font-bold text-stone-900 font-serif-tamil leading-relaxed tracking-wide mt-1">
-          {kural.line2}
-        </p>
+      {/* Couplet Section - STRICTLY 2 LINES (Line 1: 4 words, Line 2: 3 words) */}
+      <div className="py-3 px-3 sm:px-5 my-3 rounded-2xl bg-parchment-100/90 border border-parchment-300/80 overflow-x-auto no-scrollbar shadow-subtle">
+        <div className="w-full text-center space-y-1.5">
+          {/* Line 1: Strictly 4 words, single horizontal line */}
+          <p className="font-bold text-stone-900 font-serif-tamil tracking-normal whitespace-nowrap text-[13px] xs:text-[14.5px] sm:text-[16px] md:text-[17.5px] leading-relaxed">
+            {kural.line1}
+          </p>
+          {/* Line 2: Strictly 3 words, single horizontal line */}
+          <p className="font-bold text-stone-800 font-serif-tamil tracking-normal whitespace-nowrap text-[13px] xs:text-[14.5px] sm:text-[16px] md:text-[17.5px] leading-relaxed">
+            {kural.line2}
+          </p>
+        </div>
       </div>
 
       {/* English Translation & Explanation */}
-      <div className="pt-2 pb-3 space-y-1">
-        <p className="text-xs italic text-stone-600 font-sans leading-relaxed">
+      <div className="pt-1 pb-3 space-y-1.5">
+        <p className="text-xs sm:text-sm italic text-stone-700 font-sans leading-relaxed">
           "{kural.translation_en}"
         </p>
         {kural.explanation_en && kural.explanation_en !== kural.translation_en && (
-          <p className="text-xs text-stone-500 leading-relaxed">
+          <p className="text-xs text-stone-500 leading-relaxed font-sans">
             {kural.explanation_en}
           </p>
         )}
       </div>
 
       {/* Primary Commentary (Mu. Varadarajan) */}
-      <div className="my-2.5 p-3 rounded-xl bg-stone-50/90 border border-stone-200/70 space-y-1">
-        <div className="flex items-center justify-between text-[11px] font-semibold text-terracotta-700 font-sans-tamil">
+      <div className="my-2 p-3 sm:p-3.5 rounded-xl bg-stone-50/90 border border-stone-200/80 space-y-1">
+        <div className="flex items-center justify-between text-xs font-semibold text-terracotta-700 font-sans-tamil">
           <span>மு. வரதராசனார் உரை (Mu. Va Commentary)</span>
           <span className="text-[10px] text-stone-400 font-normal">முதன்மை உரை</span>
         </div>
-        <p className="text-xs text-stone-800 font-sans-tamil leading-relaxed">
+        <p className="text-xs sm:text-[13px] text-stone-800 font-sans-tamil leading-relaxed">
           {kural.urais.mu_va}
         </p>
       </div>
@@ -143,32 +163,32 @@ ${kural.explanation_en}`;
           title="சாலமன் பாப்பையா உரை"
           subtitle="Solomon Pappaiah Commentary"
         >
-          <p className="leading-relaxed">{kural.urais.pappaiah}</p>
+          <p className="text-xs sm:text-[13px] leading-relaxed text-stone-800">{kural.urais.pappaiah}</p>
         </AccordionItem>
 
         <AccordionItem
           title="கலைஞர் மு. கருணாநிதி உரை"
           subtitle="Kalaignar M. Karunanidhi Commentary"
         >
-          <p className="leading-relaxed">{kural.urais.karunanidhi}</p>
+          <p className="text-xs sm:text-[13px] leading-relaxed text-stone-800">{kural.urais.karunanidhi}</p>
         </AccordionItem>
       </div>
 
       {/* Action Footer */}
       <div className="flex items-center justify-between pt-3 mt-3 border-t border-stone-100 text-xs">
-        <span className="text-[10px] text-stone-400 font-sans">
-          {kural.pal_ta} ({kural.pal_en}) • {kural.iyal_ta}
+        <span className="text-[11px] text-stone-500 font-sans">
+          இயல்: {kural.iyal_ta} ({kural.iyal_en})
         </span>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={handleSpeak}
             aria-label="Speak couplet"
-            className={`p-2 rounded-lg transition-colors ${
+            className={`p-2 rounded-xl transition-all ${
               isSpeaking
-                ? 'bg-terracotta-600 text-white animate-pulse'
-                : 'text-stone-500 hover:text-stone-900 hover:bg-stone-100'
+                ? 'bg-terracotta-600 text-white shadow-sm animate-pulse'
+                : 'text-stone-600 hover:text-stone-950 hover:bg-stone-100'
             }`}
           >
             {isSpeaking ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
@@ -178,7 +198,7 @@ ${kural.explanation_en}`;
             type="button"
             onClick={handleCopy}
             aria-label="Copy couplet"
-            className="p-2 text-stone-500 hover:text-stone-900 hover:bg-stone-100 rounded-lg transition-colors"
+            className="p-2 text-stone-600 hover:text-stone-950 hover:bg-stone-100 rounded-xl transition-colors"
           >
             {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
           </button>
@@ -187,7 +207,7 @@ ${kural.explanation_en}`;
             type="button"
             onClick={handleShare}
             aria-label="Share couplet"
-            className="p-2 text-stone-500 hover:text-stone-900 hover:bg-stone-100 rounded-lg transition-colors"
+            className="p-2 text-stone-600 hover:text-stone-950 hover:bg-stone-100 rounded-xl transition-colors"
           >
             <Share2 className="w-4 h-4" />
           </button>
@@ -218,9 +238,9 @@ export const KuralCardList: React.FC = () => {
             <button
               type="button"
               onClick={toggleExpandedRelated}
-              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-stone-200 bg-white/80 hover:bg-stone-50 text-xs font-semibold text-stone-700 transition-all shadow-subtle"
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-2xl border border-stone-200 bg-white/90 hover:bg-stone-50 text-xs font-semibold text-stone-700 transition-all shadow-subtle hover:shadow"
             >
-              <Layers className="w-3.5 h-3.5 text-terracotta-600" />
+              <Layers className="w-4 h-4 text-terracotta-600" />
               <span>
                 {expandedRelated
                   ? 'தொடர்புடைய பிற குறள்களை மறை (Hide Related)'
@@ -230,7 +250,7 @@ export const KuralCardList: React.FC = () => {
           )}
 
           {(!isHighConfidence || expandedRelated) && (
-            <div className="space-y-3 animate-in fade-in-50 duration-300">
+            <div className="space-y-3.5 animate-in fade-in-50 duration-300">
               {secondaryResults.map((result) => (
                 <KuralCardItem key={result.kural.id} result={result} isPrimary={false} />
               ))}
