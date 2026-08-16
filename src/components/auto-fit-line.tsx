@@ -3,74 +3,53 @@ import React, { useRef, useLayoutEffect, useState } from 'react';
 interface AutoFitLineProps {
   text: string;
   className?: string;
-  maxFontSize?: number;
-  minFontSize?: number;
+  color?: string;
 }
 
 export const AutoFitLine: React.FC<AutoFitLineProps> = ({
   text,
   className = '',
-  maxFontSize = 17,
-  minFontSize = 10,
+  color = '#1c1917'
 }) => {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const textRef = useRef<HTMLParagraphElement | null>(null);
-  const [fontSize, setFontSize] = useState<number>(maxFontSize);
+  const textMeasureRef = useRef<SVGTextElement | null>(null);
+  const [viewBoxWidth, setViewBoxWidth] = useState<number>(360);
 
   useLayoutEffect(() => {
-    const container = containerRef.current;
-    const textEl = textRef.current;
-    if (!container || !textEl) return;
-
-    const computeFit = () => {
-      const containerWidth = container.clientWidth;
-      if (containerWidth <= 0) return;
-
-      // Reset to max font size to get natural unwrapped scroll width
-      textEl.style.fontSize = `${maxFontSize}px`;
-      const naturalWidth = textEl.scrollWidth;
-
-      if (naturalWidth <= containerWidth) {
-        setFontSize(maxFontSize);
-        return;
+    if (textMeasureRef.current) {
+      try {
+        const bbox = textMeasureRef.current.getBBox();
+        const measuredWidth = Math.ceil(bbox.width) + 8;
+        if (measuredWidth > 0) {
+          setViewBoxWidth(Math.max(280, measuredWidth));
+        }
+      } catch {
+        // Fallback estimated width based on character count
+        setViewBoxWidth(Math.max(280, text.length * 9.5 + 10));
       }
-
-      // Calculate exact proportional scale to guarantee full visibility
-      const scale = (containerWidth - 4) / naturalWidth;
-      const targetSize = Math.max(minFontSize, Math.min(maxFontSize, Math.floor(maxFontSize * scale * 10) / 10));
-
-      setFontSize(targetSize);
-    };
-
-    computeFit();
-
-    // Recompute on container resize (e.g. screen resize, rotation, zoom)
-    const observer = new ResizeObserver(() => {
-      computeFit();
-    });
-    observer.observe(container);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [text, maxFontSize, minFontSize]);
+    }
+  }, [text]);
 
   return (
-    <div ref={containerRef} className="w-full overflow-hidden text-left">
-      <p
-        ref={textRef}
-        className={className}
-        style={{
-          fontSize: `${fontSize}px`,
-          whiteSpace: 'nowrap',
-          display: 'inline-block',
-          width: 'auto',
-          lineHeight: 1.45,
-          letterSpacing: '-0.015em',
-        }}
+    <div className={`w-full overflow-visible ${className}`}>
+      <svg
+        viewBox={`0 0 ${viewBoxWidth} 22`}
+        className="w-full h-auto block overflow-visible select-text"
+        preserveAspectRatio="xMinYMid meet"
+        style={{ maxHeight: '28px' }}
       >
-        {text}
-      </p>
+        <text
+          ref={textMeasureRef}
+          x="0"
+          y="16.5"
+          fontFamily="'Noto Serif Tamil', serif"
+          fontWeight="700"
+          fontSize="14.5"
+          fill={color}
+          className="select-text tracking-normal"
+        >
+          {text}
+        </text>
+      </svg>
     </div>
   );
 };

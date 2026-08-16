@@ -6,7 +6,7 @@ import { useKuralStore } from '../stores/use-kural-store';
 import { Card } from './ui/card';
 import { Badge } from './ui/badge';
 import { AccordionItem } from './ui/accordion';
-import { AutoFitLine } from './auto-fit-line';
+import { KuralCouplet } from './kural-couplet';
 
 interface KuralCardProps {
   result: SearchResult;
@@ -119,24 +119,9 @@ ${kural.explanation_en}`;
         </div>
       </div>
 
-      {/* Couplet Section - AUTO-FITTING 2 LINES (Line 1: 4 words, Line 2: 3 words) */}
-      <div className="py-2.5 px-3 my-2 rounded-xl bg-parchment-100/90 border-l-4 border-l-terracotta-600 border border-parchment-300/80 shadow-subtle overflow-hidden">
-        <div className="w-full text-left space-y-1">
-          {/* Line 1: Exactly 4 words, dynamically auto-scaled to fit without wrap or overflow */}
-          <AutoFitLine
-            text={kural.line1}
-            className="font-bold text-stone-950 font-serif-tamil tracking-tight text-left select-text"
-            maxFontSize={17}
-            minFontSize={10.5}
-          />
-          {/* Line 2: Exactly 3 words, dynamically auto-scaled to fit without wrap or overflow */}
-          <AutoFitLine
-            text={kural.line2}
-            className="font-bold text-stone-800 font-serif-tamil tracking-tight text-left select-text"
-            maxFontSize={17}
-            minFontSize={10.5}
-          />
-        </div>
+      {/* Couplet Section - AUTO-SCALED 2 LINES WITH IDENTICAL FONT SIZE (Line 1: 4 words, Line 2: 3 words) */}
+      <div className="py-2.5 px-3.5 my-2 rounded-xl bg-parchment-100/90 border-l-4 border-l-terracotta-600 border border-parchment-300/80 shadow-subtle">
+        <KuralCouplet line1={kural.line1} line2={kural.line2} />
       </div>
 
       {/* English Translation & Explanation */}
