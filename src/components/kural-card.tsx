@@ -6,7 +6,6 @@ import { useKuralStore } from '../stores/use-kural-store';
 import { Card } from './ui/card';
 import { Badge } from './ui/badge';
 import { AccordionItem } from './ui/accordion';
-import { KuralCouplet } from './kural-couplet';
 
 interface KuralCardProps {
   result: SearchResult;
@@ -119,9 +118,24 @@ ${kural.explanation_en}`;
         </div>
       </div>
 
-      {/* Couplet Section - AUTO-SCALED 2 LINES WITH IDENTICAL FONT SIZE (Line 1: 4 words, Line 2: 3 words) */}
-      <div className="py-2.5 px-3.5 my-2 rounded-xl bg-parchment-100/90 border-l-4 border-l-terracotta-600 border border-parchment-300/80 shadow-subtle">
-        <KuralCouplet line1={kural.line1} line2={kural.line2} />
+      {/* Couplet Section - PURE CSS CONTAINER QUERY FLUID TYPOGRAPHY (Zero JS overhead, identical font size) */}
+      <div className="py-2.5 px-3.5 my-2 rounded-xl bg-parchment-100/90 border-l-4 border-l-terracotta-600 border border-parchment-300/80 shadow-subtle [container-type:inline-size]">
+        <div className="w-full text-left space-y-1">
+          {/* Line 1: Strictly 4 words, single horizontal line, left-aligned, auto-scaled via CQI */}
+          <p
+            className="font-serif-tamil font-bold text-stone-950 tracking-tight whitespace-nowrap text-left select-text"
+            style={{ fontSize: 'clamp(11px, 4.35cqi, 16.5px)', lineHeight: 1.5 }}
+          >
+            {kural.line1}
+          </p>
+          {/* Line 2: Strictly 3 words, single horizontal line, left-aligned, exact same font size */}
+          <p
+            className="font-serif-tamil font-bold text-stone-800 tracking-tight whitespace-nowrap text-left select-text"
+            style={{ fontSize: 'clamp(11px, 4.35cqi, 16.5px)', lineHeight: 1.5 }}
+          >
+            {kural.line2}
+          </p>
+        </div>
       </div>
 
       {/* English Translation & Explanation */}
