@@ -21,6 +21,11 @@ export const KuralCardItem: React.FC<KuralCardProps> = ({ result, isPrimary = fa
   const matchPercent = Math.round(score * 100);
   const isSpeaking = activeSpeechId === kural.id;
 
+  // Calculate dynamic CQI scaling factor based on the longest line in this specific couplet
+  const maxChars = Math.max(kural.line1.length, kural.line2.length, 28);
+  // 86cqi available width inside padded container query box
+  const dynamicCqi = Math.min(4.5, (86 / (maxChars * 0.72))).toFixed(2);
+
   const handleSpeak = async () => {
     if (isSpeaking) {
       speechService.stop();
@@ -118,20 +123,20 @@ ${kural.explanation_en}`;
         </div>
       </div>
 
-      {/* Couplet Section - PURE CSS CONTAINER QUERY FLUID TYPOGRAPHY */}
+      {/* Couplet Section - PURE CSS CONTAINER QUERY WITH DYNAMIC CQI (Strictly 2 lines, identical font size, zero overflow) */}
       <div className="py-2.5 px-3 my-2 rounded-xl bg-parchment-100/90 border-l-4 border-l-terracotta-600 border border-parchment-300/80 shadow-subtle [container-type:inline-size]">
         <div className="w-full text-left space-y-1">
-          {/* Line 1: Strictly 4 words, single horizontal line, left-aligned, auto-scaled via calibrated CQI */}
+          {/* Line 1: Strictly 4 words, single horizontal line, left-aligned */}
           <p
             className="font-serif-tamil font-bold text-stone-950 tracking-tight whitespace-nowrap text-left select-text"
-            style={{ fontSize: 'clamp(9.5px, 3.25cqi, 15px)', lineHeight: 1.55 }}
+            style={{ fontSize: `min(16px, ${dynamicCqi}cqi)`, lineHeight: 1.55 }}
           >
             {kural.line1}
           </p>
-          {/* Line 2: Strictly 3 words, single horizontal line, left-aligned, exact same font size */}
+          {/* Line 2: Strictly 3 words, single horizontal line, left-aligned, identical font size */}
           <p
             className="font-serif-tamil font-bold text-stone-800 tracking-tight whitespace-nowrap text-left select-text"
-            style={{ fontSize: 'clamp(9.5px, 3.25cqi, 15px)', lineHeight: 1.55 }}
+            style={{ fontSize: `min(16px, ${dynamicCqi}cqi)`, lineHeight: 1.55 }}
           >
             {kural.line2}
           </p>
