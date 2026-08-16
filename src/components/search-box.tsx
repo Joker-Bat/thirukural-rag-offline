@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { Search, Loader2, ArrowRight, CornerDownLeft } from 'lucide-react';
+import { Search, Loader2, ArrowUpRight, CornerDownLeft } from 'lucide-react';
 import { useKuralStore } from '../stores/use-kural-store';
 import { useRetrieval } from '../context/service-context';
 import { Button } from './ui/button';
@@ -56,19 +56,20 @@ export const SearchBox: React.FC = () => {
     if (!trimmed || isSearching) return;
 
     // Check if model needs downloading
-    if (modelStatus === 'uninitialized' || modelStatus === 'downloading') {
+    if (modelStatus === 'uninitialized') {
       setShowDownloadModal(true);
+      return;
     }
 
     setIsSearching(true);
 
     try {
-      // Ensure retrieval service is initialized
-      await retrievalService.initialize((progress) => {
-        handleProgress(progress);
-      });
-      setModelStatus('ready');
-      setShowDownloadModal(false);
+      if (modelStatus !== 'ready') {
+        await retrievalService.initialize((progress) => {
+          handleProgress(progress);
+        });
+        setModelStatus('ready');
+      }
 
       const results = await retrievalService.search(trimmed, 3);
       setResults(results);
@@ -92,11 +93,11 @@ export const SearchBox: React.FC = () => {
   };
 
   return (
-    <div className="w-full space-y-3.5">
+    <div className="w-full space-y-3 sm:space-y-4">
       {/* Input container */}
-      <div className="relative rounded-2xl bg-white border border-stone-200/90 shadow-card focus-within:border-terracotta-500 focus-within:ring-2 focus-within:ring-terracotta-100 transition-all p-3">
+      <div className="relative rounded-2xl bg-white border border-stone-200/90 shadow-card focus-within:border-terracotta-500 focus-within:ring-2 focus-within:ring-terracotta-100 transition-all p-3 sm:p-3.5">
         <div className="flex items-start gap-2">
-          <Search className="w-4 h-4 text-stone-400 mt-2 shrink-0 ml-1" />
+          <Search className="w-4 h-4 text-stone-400 mt-1 shrink-0 ml-0.5" />
           <textarea
             ref={textareaRef}
             rows={2}
@@ -104,13 +105,13 @@ export const SearchBox: React.FC = () => {
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="உங்கள் மனநிலை அல்லது சூழலை விவரிக்கவும்... (e.g. feeling sad because friend cheated / முயற்சி தோல்வி)"
-            className="w-full resize-none border-0 bg-transparent p-0 text-sm text-stone-800 placeholder-stone-400 focus:outline-none focus:ring-0 leading-relaxed font-sans"
+            className="w-full resize-none border-0 bg-transparent p-0 text-xs sm:text-sm text-stone-800 placeholder-stone-400 focus:outline-none focus:ring-0 leading-relaxed font-sans"
             maxLength={300}
           />
         </div>
 
         <div className="flex items-center justify-between pt-2 mt-2 border-t border-stone-100 text-xs">
-          <span className="text-[11px] text-stone-400 font-mono pl-1">
+          <span className="text-[11px] text-stone-400 font-mono pl-0.5">
             {query.length}/300
           </span>
 
@@ -119,7 +120,7 @@ export const SearchBox: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setQuery('')}
-                className="text-[11px] text-stone-400 hover:text-stone-600 px-1.5 py-0.5"
+                className="text-[11px] text-stone-400 hover:text-stone-700 px-2 py-1 transition-colors"
               >
                 Clear
               </button>
@@ -128,7 +129,7 @@ export const SearchBox: React.FC = () => {
               size="sm"
               onClick={() => handleSearch()}
               disabled={!query.trim() || isSearching}
-              className="gap-1 px-3 py-1.5 font-medium rounded-lg text-xs"
+              className="gap-1 px-3 py-1.5 font-medium rounded-xl text-xs shadow-sm"
             >
               {isSearching ? (
                 <>
@@ -146,27 +147,27 @@ export const SearchBox: React.FC = () => {
         </div>
       </div>
 
-      {/* Situation Preset Chips */}
+      {/* Situation Preset Chips (Equal Heights & Clean Grid) */}
       <div className="space-y-1.5">
-        <p className="text-[11px] font-semibold tracking-wider text-stone-500 uppercase px-1">
+        <p className="text-[11px] font-semibold tracking-wider text-stone-500 uppercase px-0.5">
           விரைவு சூழல்கள் (Quick Situations)
         </p>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-2 sm:gap-2.5">
           {PRESET_CHIPS.map((chip, idx) => (
             <button
               key={idx}
               type="button"
               onClick={() => handlePresetClick(chip.query)}
               disabled={isSearching}
-              className="flex flex-col text-left p-2.5 rounded-xl border border-stone-200/90 bg-white/90 hover:border-terracotta-400 hover:bg-terracotta-50/40 transition-all shadow-subtle group active:scale-[0.98]"
+              className="h-full min-h-[70px] sm:min-h-[76px] flex flex-col justify-between text-left p-2.5 sm:p-3 rounded-2xl border border-stone-200/90 bg-white/95 hover:border-terracotta-400 hover:bg-terracotta-50/40 transition-all shadow-subtle group active:scale-[0.98]"
             >
               <div className="flex items-center justify-between w-full">
-                <span className="text-xs font-semibold text-stone-800 font-sans-tamil group-hover:text-terracotta-700">
+                <span className="text-xs sm:text-[13px] font-bold text-stone-800 font-sans-tamil group-hover:text-terracotta-700 truncate pr-1">
                   {chip.ta}
                 </span>
-                <ArrowRight className="w-3 h-3 text-stone-300 group-hover:text-terracotta-600 transition-transform group-hover:translate-x-0.5 shrink-0" />
+                <ArrowUpRight className="w-3.5 h-3.5 text-stone-400 group-hover:text-terracotta-600 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 shrink-0" />
               </div>
-              <span className="text-[11px] text-stone-500 line-clamp-1 mt-0.5">
+              <span className="text-[10px] sm:text-[11px] text-stone-500 line-clamp-1 mt-1 font-sans">
                 {chip.en}
               </span>
             </button>

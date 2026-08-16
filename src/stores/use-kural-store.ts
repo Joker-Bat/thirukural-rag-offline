@@ -1,6 +1,17 @@
 import { create } from 'zustand';
 import { SearchResult, ModelStatus, ModelDownloadProgress } from '../types/kural';
 
+const STORAGE_KEY = 'thirukural_model_cached_v1';
+
+const isAlreadyCached = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  try {
+    return localStorage.getItem(STORAGE_KEY) === 'true';
+  } catch {
+    return false;
+  }
+};
+
 interface KuralState {
   query: string;
   isSearching: boolean;
@@ -28,15 +39,18 @@ interface KuralState {
   resetSearch: () => void;
 }
 
+const alreadyDownloaded = isAlreadyCached();
+
 export const useKuralStore = create<KuralState>((set) => ({
   query: '',
   isSearching: false,
   hasSearched: false,
   results: [],
-  modelStatus: 'uninitialized',
-  downloadProgress: 0,
+  // If already downloaded, start as ready/uninitialized without showing modal
+  modelStatus: alreadyDownloaded ? 'ready' : 'uninitialized',
+  downloadProgress: alreadyDownloaded ? 100 : 0,
   currentLoadingFile: undefined,
-  showDownloadModal: true, // Default open on startup for transparent first-time setup
+  showDownloadModal: !alreadyDownloaded,
   expandedRelated: false,
   activeSpeechId: null,
   isOffline: typeof navigator !== 'undefined' ? !navigator.onLine : false,
@@ -44,37 +58,42 @@ export const useKuralStore = create<KuralState>((set) => ({
   setQuery: (query) => set({ query }),
   setIsSearching: (isSearching) => set({ isSearching }),
   setResults: (results) => set({ results, hasSearched: true, isSearching: false }),
-  setModelStatus: (modelStatus) =>
+  setModelStatus: (modelStatus) => {
+    if (modelStatus === 'ready') {
+      try {
+        localStorage.setItem(STORAGE_KEY, 'true');
+      } catch (e) {
+        console.warn('localStorage error', e);
+      }
+    }
     set((state) => ({
       modelStatus,
       downloadProgress: modelStatus === 'ready' ? 100 : state.downloadProgress,
-    })),
+    }));
+  },
   handleProgress: (p) => {
     set((state) => {
       let rawPct = 0;
-      if (typeof p.progress === 'number') {
+      if (typeof p.progress === 'number' && !isNaN(p.progress)) {
         rawPct = p.progress;
       } else if (p.loaded && p.total && p.total > 0) {
         rawPct = (p.loaded / p.total) * 100;
       }
 
-      // Calculate smooth monotonic percentage across all model sub-files
-      let effectivePct = state.downloadProgress;
-      const fileName = p.file || '';
+      let currentPct = state.downloadProgress;
+      const file = p.file || '';
 
-      if (fileName.includes('.onnx') || fileName.includes('model')) {
-        // Main ONNX model takes 10% - 95%
-        effectivePct = Math.max(state.downloadProgress, Math.round(10 + rawPct * 0.85));
-      } else if (fileName.includes('tokenizer') || fileName.includes('json')) {
-        // Tokenizer/config takes 2% - 10%
-        effectivePct = Math.max(state.downloadProgress, Math.min(10, Math.round(rawPct * 0.1)));
-      } else {
-        effectivePct = Math.max(state.downloadProgress, Math.round(rawPct));
+      if (file.includes('onnx') || file.includes('model')) {
+        currentPct = Math.max(currentPct, Math.round(5 + rawPct * 0.90));
+      } else if (file.includes('tokenizer') || file.includes('json')) {
+        currentPct = Math.max(currentPct, Math.min(5, Math.round(rawPct * 0.05)));
+      } else if (p.status === 'done') {
+        currentPct = Math.max(currentPct, 95);
       }
 
       return {
         modelStatus: 'downloading',
-        downloadProgress: Math.min(99, Math.max(state.downloadProgress, effectivePct)),
+        downloadProgress: Math.min(99, Math.max(state.downloadProgress, currentPct)),
         currentLoadingFile: p.file || state.currentLoadingFile,
       };
     });
