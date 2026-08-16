@@ -3,11 +3,10 @@
 import { pipeline, env } from '@huggingface/transformers';
 import { InboundWorkerMessage, OutboundWorkerMessage } from './types/worker-messages';
 
-// Configure transformers.js with graceful fallback for insecure (plain HTTP IP) dev origins
-const isCacheAvailable = typeof self !== 'undefined' && 'caches' in self && Boolean(self.isSecureContext);
+// Configure transformers.js for browser environment
 env.allowLocalModels = false;
-env.useBrowserCache = isCacheAvailable;
-env.useCustomCache = isCacheAvailable;
+env.useBrowserCache = typeof self !== 'undefined' && 'caches' in self && Boolean(self.isSecureContext);
+env.useCustomCache = false;
 
 const MODEL_ID = 'Xenova/paraphrase-multilingual-MiniLM-L12-v2';
 
