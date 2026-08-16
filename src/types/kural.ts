@@ -32,6 +32,14 @@ export interface VectorMatch {
   score: number;
 }
 
+export interface SearchMeta {
+  type: 'direct_kural' | 'athikaram' | 'semantic';
+  title?: string;
+  subtitle?: string;
+  athikaramNum?: number;
+  count?: number;
+}
+
 export interface SearchResult {
   kural: Kural;
   score: number;

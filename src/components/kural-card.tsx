@@ -227,10 +227,65 @@ ${kural.explanation_en}`;
 };
 
 export const KuralCardList: React.FC = () => {
-  const { results, expandedRelated, toggleExpandedRelated } = useKuralStore();
+  const { results, searchMeta, expandedRelated, toggleExpandedRelated } = useKuralStore();
 
   if (!results || results.length === 0) return null;
 
+  // Case 1: Athikaram (Chapter) Search Mode -> Render all 10 Kurals with Chapter Banner
+  if (searchMeta?.type === 'athikaram') {
+    return (
+      <div className="space-y-3.5 pt-1">
+        {/* Chapter Header Banner */}
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-terracotta-50 to-stone-50 border border-terracotta-200/80 shadow-subtle flex items-center justify-between">
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <div className="w-9 h-9 rounded-xl bg-terracotta-600 flex items-center justify-center text-white shrink-0 shadow-sm">
+              <BookOpen className="w-4 h-4" />
+            </div>
+            <div>
+              <h2 className="text-sm sm:text-base font-bold text-stone-900 font-serif-tamil leading-tight">
+                {searchMeta.title}
+              </h2>
+              <p className="text-[11px] sm:text-xs text-stone-500 font-sans mt-0.5">
+                {searchMeta.subtitle || `அதிகாரம் ${searchMeta.athikaramNum} · 10 திருக்குறள்கள்`}
+              </p>
+            </div>
+          </div>
+          <Badge variant="terracotta" className="text-[10px] px-2 py-0.5 shrink-0">
+            10 குறள்கள்
+          </Badge>
+        </div>
+
+        {/* All 10 Kurals rendered sequentially */}
+        <div className="space-y-3">
+          {results.map((result, idx) => (
+            <KuralCardItem
+              key={result.kural.id}
+              result={result}
+              isPrimary={idx === 0}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Case 2: Direct Single Kural Lookup Mode
+  if (searchMeta?.type === 'direct_kural') {
+    return (
+      <div className="space-y-3 pt-1">
+        <div className="flex items-center justify-between px-1">
+          <span className="text-xs font-semibold text-terracotta-700 font-sans flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+            {searchMeta.title || `குறள் எண் #${results[0].kural.id}`}
+          </span>
+          <span className="text-[11px] text-stone-400 font-sans">100% நேரடித் தேர்வு</span>
+        </div>
+        <KuralCardItem result={results[0]} isPrimary={true} />
+      </div>
+    );
+  }
+
+  // Case 3: Semantic / Situational Search Mode
   const primaryResult = results[0];
   const secondaryResults = results.slice(1);
   const isHighConfidence = primaryResult.confidence === 'high';

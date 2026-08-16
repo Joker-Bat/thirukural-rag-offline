@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { SearchResult, ModelStatus, ModelDownloadProgress } from '../types/kural';
+import { SearchResult, SearchMeta, ModelStatus, ModelDownloadProgress } from '../types/kural';
 
 const STORAGE_KEY = 'thirukural_model_cached_v1';
 
@@ -17,6 +17,7 @@ interface KuralState {
   isSearching: boolean;
   hasSearched: boolean;
   results: SearchResult[];
+  searchMeta: SearchMeta | null;
   modelStatus: ModelStatus;
   downloadProgress: number;
   currentLoadingFile?: string;
@@ -28,7 +29,8 @@ interface KuralState {
   // Actions
   setQuery: (query: string) => void;
   setIsSearching: (isSearching: boolean) => void;
-  setResults: (results: SearchResult[]) => void;
+  setResults: (results: SearchResult[], meta?: SearchMeta | null) => void;
+  setSearchMeta: (meta: SearchMeta | null) => void;
   setModelStatus: (status: ModelStatus) => void;
   handleProgress: (progress: ModelDownloadProgress) => void;
   setShowDownloadModal: (show: boolean) => void;
@@ -46,6 +48,7 @@ export const useKuralStore = create<KuralState>((set) => ({
   isSearching: false,
   hasSearched: false,
   results: [],
+  searchMeta: null,
   // If already downloaded, start as ready/uninitialized without showing modal
   modelStatus: alreadyDownloaded ? 'ready' : 'uninitialized',
   downloadProgress: alreadyDownloaded ? 100 : 0,
@@ -57,7 +60,9 @@ export const useKuralStore = create<KuralState>((set) => ({
 
   setQuery: (query) => set({ query }),
   setIsSearching: (isSearching) => set({ isSearching }),
-  setResults: (results) => set({ results, hasSearched: true, isSearching: false }),
+  setResults: (results, meta = null) =>
+    set({ results, searchMeta: meta, hasSearched: true, isSearching: false }),
+  setSearchMeta: (searchMeta) => set({ searchMeta }),
   setModelStatus: (modelStatus) => {
     if (modelStatus === 'ready') {
       try {
@@ -103,5 +108,6 @@ export const useKuralStore = create<KuralState>((set) => ({
   toggleExpandedRelated: () => set((state) => ({ expandedRelated: !state.expandedRelated })),
   setActiveSpeechId: (activeSpeechId) => set({ activeSpeechId }),
   setIsOffline: (isOffline) => set({ isOffline }),
-  resetSearch: () => set({ query: '', results: [], hasSearched: false, expandedRelated: false }),
+  resetSearch: () =>
+    set({ query: '', results: [], searchMeta: null, hasSearched: false, expandedRelated: false }),
 }));

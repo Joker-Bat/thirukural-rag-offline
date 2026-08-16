@@ -1,4 +1,5 @@
-import { SearchResult, ModelDownloadProgress, ModelStatus } from '../../types/kural';
+import { SearchResult, SearchMeta, ModelDownloadProgress, ModelStatus } from '../../types/kural';
+import { SearchStrategyResult } from './search-strategy.interface';
 
 export interface IKuralRetrievalService {
   /**
@@ -7,10 +8,20 @@ export interface IKuralRetrievalService {
   initialize(onProgress?: (progress: ModelDownloadProgress) => void): Promise<void>;
 
   /**
-   * Performs end-to-end semantic retrieval for a user query.
-   * Vectorizes query, computes similarities, and joins with Kural metadata.
+   * Performs end-to-end multi-route retrieval for a user query.
+   * Returns top matching results.
    */
   search(query: string, topK?: number): Promise<SearchResult[]>;
+
+  /**
+   * Performs multi-route retrieval and returns both results and route metadata.
+   */
+  searchDetailed(query: string, topK?: number): Promise<SearchStrategyResult>;
+
+  /**
+   * Gets metadata from the last performed search.
+   */
+  getLastSearchMeta(): SearchMeta | null;
 
   /**
    * Checks if retrieval system is ready.

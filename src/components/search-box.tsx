@@ -69,6 +69,7 @@ export const SearchBox: React.FC = () => {
     setIsSearching(true);
 
     try {
+      // If model is not ready and not a simple number lookup, initialize silently or on demand
       if (modelStatus !== 'ready') {
         await retrievalService.initialize((progress) => {
           handleProgress(progress);
@@ -76,8 +77,8 @@ export const SearchBox: React.FC = () => {
         setModelStatus('ready');
       }
 
-      const results = await retrievalService.search(trimmed, 3);
-      setResults(results);
+      const { results, meta } = await retrievalService.searchDetailed(trimmed, 3);
+      setResults(results, meta);
     } catch (err) {
       console.error('Search failed:', err);
       setIsSearching(false);

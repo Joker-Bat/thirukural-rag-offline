@@ -2,13 +2,17 @@ import { IKuralRetrievalService } from './interfaces/retrieval-service.interface
 import { IKuralDataSource } from './interfaces/data-source.interface';
 import { IVectorIndex } from './interfaces/vector-index.interface';
 import { IEmbeddingService } from './interfaces/embedding-service.interface';
-import { SearchResult, ModelDownloadProgress, ModelStatus } from '../types/kural';
+import { ISearchStrategy, SearchStrategyResult } from './interfaces/search-strategy.interface';
+import { SearchResult, SearchMeta, ModelDownloadProgress, ModelStatus } from '../types/kural';
 
 export class KuralRetrievalService implements IKuralRetrievalService {
+  private lastSearchMeta: SearchMeta | null = null;
+
   constructor(
     private dataSource: IKuralDataSource,
     private vectorIndex: IVectorIndex,
-    private embeddingService: IEmbeddingService
+    private embeddingService: IEmbeddingService,
+    private strategies: ISearchStrategy[] = []
   ) {}
 
   async initialize(onProgress?: (progress: ModelDownloadProgress) => void): Promise<void> {
@@ -20,45 +24,48 @@ export class KuralRetrievalService implements IKuralRetrievalService {
   }
 
   async search(query: string, topK: number = 3): Promise<SearchResult[]> {
-    const trimmed = query.trim();
-    if (!trimmed) return [];
+    const envelope = await this.searchDetailed(query, topK);
+    return envelope.results;
+  }
 
-    // Ensure data and index are loaded
+  async searchDetailed(query: string, topK: number = 3): Promise<SearchStrategyResult> {
+    const trimmed = query.trim();
+    if (!trimmed) {
+      this.lastSearchMeta = null;
+      return { results: [] };
+    }
+
+    // Ensure data source is loaded
     if (!this.dataSource.isLoaded()) {
       await this.dataSource.load();
     }
-    if (!this.vectorIndex.isLoaded()) {
-      await this.vectorIndex.load();
-    }
 
-    // 1. Vectorize query
-    const queryVector = await this.embeddingService.embed(trimmed);
+    const allKurals = this.dataSource.getAllKurals();
 
-    // 2. Query nearest neighbor vector index
-    const matches = await this.vectorIndex.search(queryVector, topK);
-
-    // 3. Map indices to Kurals and assign confidence tiers
-    const results: SearchResult[] = [];
-    for (const match of matches) {
-      const kuralId = match.index + 1; // 1-indexed Kural ID
-      const kural = this.dataSource.getKuralById(kuralId);
-      if (kural) {
-        let confidence: 'high' | 'moderate' | 'low' = 'low';
-        if (match.score >= 0.55) {
-          confidence = 'high';
-        } else if (match.score >= 0.35) {
-          confidence = 'moderate';
+    // Iterate through injected search strategies in priority order
+    for (const strategy of this.strategies) {
+      if (strategy.canHandle(trimmed, allKurals)) {
+        // If the strategy requires vector embeddings (like SemanticRagStrategy), ensure index & worker are ready
+        if (strategy.name === 'SemanticRagStrategy') {
+          if (!this.vectorIndex.isLoaded()) {
+            await this.vectorIndex.load();
+          }
         }
 
-        results.push({
-          kural,
-          score: Math.min(1.0, Math.max(0.0, match.score)),
-          confidence,
-        });
+        const strategyResult = await strategy.execute(trimmed, allKurals, topK);
+        if (strategyResult && strategyResult.results.length > 0) {
+          this.lastSearchMeta = strategyResult.meta || null;
+          return strategyResult;
+        }
       }
     }
 
-    return results;
+    this.lastSearchMeta = null;
+    return { results: [] };
+  }
+
+  getLastSearchMeta(): SearchMeta | null {
+    return this.lastSearchMeta;
   }
 
   isReady(): boolean {

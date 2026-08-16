@@ -10,6 +10,11 @@ import { WorkerEmbeddingService } from './worker-embedding-service';
 import { KuralRetrievalService } from './kural-retrieval-service';
 import { WebSpeechService } from './web-speech-service';
 
+// Multi-route search strategies
+import { DirectNumberStrategy } from './strategies/direct-number-strategy';
+import { AthikaramStrategy } from './strategies/athikaram-strategy';
+import { SemanticRagStrategy } from './strategies/semantic-rag-strategy';
+
 export interface IServiceContainer {
   dataSource: IKuralDataSource;
   vectorIndex: IVectorIndex;
@@ -26,7 +31,20 @@ export function createDefaultServiceContainer(): IServiceContainer {
   const dataSource = new StaticJsonKuralDataSource(`${base}kurals.json`);
   const vectorIndex = new FlatBinaryCosineVectorIndex(`${base}kural-embeddings.bin`);
   const embeddingService = new WorkerEmbeddingService();
-  const retrievalService = new KuralRetrievalService(dataSource, vectorIndex, embeddingService);
+
+  // Multi-route search strategy pipeline
+  const strategies = [
+    new DirectNumberStrategy(),
+    new AthikaramStrategy(),
+    new SemanticRagStrategy(embeddingService, vectorIndex),
+  ];
+
+  const retrievalService = new KuralRetrievalService(
+    dataSource,
+    vectorIndex,
+    embeddingService,
+    strategies
+  );
   const speechService = new WebSpeechService();
 
   return {
